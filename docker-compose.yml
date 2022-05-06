@@ -1,0 +1,35 @@
+#
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      args:
+        APPDIR: ${APPDIR:-someapp}
+    ports:
+      - 18080:8080
+    container_name: laravel-app-${APPDIR:-someapp}
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - /bin/sh
+      - -c
+      - /usr/local/bin/php /home/app/${APPDIR:-someapp}/artisan migrate && /usr/local/bin/rr serve -c /home/app/${APPDIR:-someapp}/.rr.yaml
+    env_file:
+      - docker.env
+    environment:
+      - APPDIR
+  db:
+    image: mysql:8.0
+    env_file:
+      - docker.env
+    container_name: mysql-laravel-${APPDIR:-someapp}
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin -u root --password=$$MYSQL_ROOT_PASSWORD status"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
