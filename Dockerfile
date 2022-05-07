@@ -20,7 +20,7 @@ RUN mv composer.phar /usr/local/bin/composer
 
 RUN mkdir -p /home/app/${APPDIR:-someapp}
 RUN chown www-data:www-data /var/www
-ADD --chown=www-data:www-data ./${APPDIR:-someapp} /home/app//${APPDIR:-someapp}/
+ADD --chown=www-data:www-data ./${APPDIR:-someapp} /home/app/${APPDIR:-someapp}/
 ADD --chown=www-data:www-data ./.rr.yaml /home/app/${APPDIR:-someapp}
 # setup for rr
 
